@@ -4,39 +4,37 @@ import API from '../src';
 import createRequestMock from './helpers/create_request_mock';
 
 describe('API', () => {
+  const bearerTokenKeyInLocalStorage = 'auth_token';
   const host = 'http://www.example.com';
 
   describe('Setup', () => {
     describe('#absolutePath', () => {
       it('combines the host and the path', () => {
-        const instance = new API(host);
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
         const path = 'my-path';
 
         expect(instance.absolutePath(path)).toEqual('http://www.example.com/my-path');
       });
-    });
 
-    describe('#setBearerToken', () => {
-      it('sets the bearerToken attribute on the API instance', () => {
-        const instance = new API(host);
+      describe('#bearerToken', () => {
+        context('when the bearer token is set in local storage', () => {
+          beforeEach(() => global.window.localStorage.setItem(bearerTokenKeyInLocalStorage, 'bearer-token'))
+          afterEach(() => global.window.localStorage.removeItem(bearerTokenKeyInLocalStorage))
 
-        instance.setBearerToken('bearerToken');
+          it('returns the bearer token from local storage', () => {
+            const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-        expect(instance.bearerToken).toEqual('bearerToken');
-      });
-    });
+            expect(instance.bearerToken).toEqual('bearer-token');
+          });
+        });
 
-    describe('#removeBearerToken', () => {
-      it('removes the bearerToken attribute from the API instance', () => {
-        const instance = new API(host);
+        context('when the bearer token is not set in local storage', () => {
+          it('returns null', () => {
+            const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-        instance.setBearerToken('bearerToken');
-
-        expect(instance.bearerToken).toEqual('bearerToken');
-
-        instance.removeBearerToken();
-
-        expect(instance.bearerToken).toNotExist();
+            expect(instance.bearerToken).toEqual(null);
+          });
+        });
       });
     });
   });
@@ -52,7 +50,7 @@ describe('API', () => {
           response: mockResponse,
         });
 
-        const instance = new API(host);
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
         return instance.unauthenticated.get('users')
           .then((response) => {
@@ -69,7 +67,7 @@ describe('API', () => {
           responseStatus: 422,
         });
 
-        const instance = new API(host);
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
         return instance.unauthenticated.get('users')
           .catch(() => expect(request.isDone()).toEqual(true));
@@ -86,7 +84,7 @@ describe('API', () => {
           response: mockResponse,
         });
 
-        const instance = new API(host);
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
         return instance.unauthenticated.delete('users/1')
           .then((response) => {
@@ -103,7 +101,7 @@ describe('API', () => {
           responseStatus: 404,
         });
 
-        const instance = new API(host);
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
         return instance.unauthenticated.delete('users/1')
           .catch(() => expect(request.isDone()).toEqual(true));
@@ -121,7 +119,7 @@ describe('API', () => {
           response: mockResponse,
         });
 
-        const instance = new API(host);
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
         return instance.unauthenticated.patch('users/1', { last_name: 'Gnar' })
           .then((response) => {
@@ -139,7 +137,7 @@ describe('API', () => {
           responseStatus: 404,
         });
 
-        const instance = new API(host);
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
         return instance.unauthenticated.patch('users/1', { last_name: 'Gnar' })
           .catch(() => expect(request.isDone()).toEqual(true));
@@ -157,7 +155,7 @@ describe('API', () => {
           response: mockResponse,
         });
 
-        const instance = new API(host);
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
         return instance.unauthenticated.post('users', { last_name: 'Gnar' })
           .then((response) => {
@@ -175,7 +173,7 @@ describe('API', () => {
           responseStatus: 404,
         });
 
-        const instance = new API(host);
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
         return instance.unauthenticated.post('users', { last_name: 'Gnar' })
           .catch(() => expect(request.isDone()).toEqual(true));
@@ -185,10 +183,10 @@ describe('API', () => {
 
   describe('Authenticated requests', () => {
     const bearerToken = 'bearerToken';
-    const instance = new API(host);
+    const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-    beforeEach(() => instance.setBearerToken('bearerToken'));
-    afterEach(() => instance.removeBearerToken());
+    beforeEach(() => global.window.localStorage.setItem(bearerTokenKeyInLocalStorage, bearerToken));
+    afterEach(() => global.window.localStorage.removeItem(bearerTokenKeyInLocalStorage));
 
     describe('GET requests', () => {
       it('calls the endpoint with the correct parameters', () => {

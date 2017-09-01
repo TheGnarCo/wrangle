@@ -5,7 +5,8 @@ import Request from './request';
 es6Promise.polyfill();
 
 class API {
-  constructor (host) {
+  constructor ({ host, bearerTokenKeyInLocalStorage }) {
+    this.bearerTokenKey = bearerTokenKeyInLocalStorage;
     this.host = host;
   }
 
@@ -13,12 +14,8 @@ class API {
     return `${this.host}/${path}`;
   }
 
-  setBearerToken = (bearerToken) => {
-    this.bearerToken = bearerToken;
-  }
-
-  removeBearerToken = () => {
-    this.bearerToken = null;
+  get bearerToken () {
+    return global.window.localStorage.getItem(this.bearerTokenKey);
   }
 
   authenticatedHeaders = {
