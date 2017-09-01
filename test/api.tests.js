@@ -15,25 +15,25 @@ describe('API', () => {
 
         expect(instance.absolutePath(path)).toEqual('http://www.example.com/my-path');
       });
+    });
 
-      describe('#bearerToken', () => {
-        context('when the bearer token is set in local storage', () => {
-          beforeEach(() => global.window.localStorage.setItem(bearerTokenKeyInLocalStorage, 'bearer-token'))
-          afterEach(() => global.window.localStorage.removeItem(bearerTokenKeyInLocalStorage))
+    describe('#bearerToken', () => {
+      context('when the bearer token is set in local storage', () => {
+        beforeEach(() => global.window.localStorage.setItem(bearerTokenKeyInLocalStorage, 'bearer-token'));
+        afterEach(() => global.window.localStorage.removeItem(bearerTokenKeyInLocalStorage));
 
-          it('returns the bearer token from local storage', () => {
-            const instance = new API({ host, bearerTokenKeyInLocalStorage });
+        it('returns the bearer token from local storage', () => {
+          const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-            expect(instance.bearerToken).toEqual('bearer-token');
-          });
+          expect(instance.bearerToken()).toEqual('bearer-token');
         });
+      });
 
-        context('when the bearer token is not set in local storage', () => {
-          it('returns null', () => {
-            const instance = new API({ host, bearerTokenKeyInLocalStorage });
+      context('when the bearer token is not set in local storage', () => {
+        it('returns null', () => {
+          const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-            expect(instance.bearerToken).toEqual(null);
-          });
+          expect(instance.bearerToken()).toEqual(null);
         });
       });
     });
@@ -185,10 +185,7 @@ describe('API', () => {
     const bearerToken = 'bearerToken';
     const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-    beforeEach(() => global.window.localStorage.setItem(bearerTokenKeyInLocalStorage, bearerToken));
-    afterEach(() => global.window.localStorage.removeItem(bearerTokenKeyInLocalStorage));
-
-    describe('GET requests', () => {
+    describe('When the bearer token is added after instance is created', () => {
       it('calls the endpoint with the correct parameters', () => {
         const mockResponse = [{ first_name: 'Gnar' }];
         const request = createRequestMock({
@@ -199,124 +196,152 @@ describe('API', () => {
           response: mockResponse,
         });
 
-        return instance.authenticated.get('users')
-          .then((response) => {
-            expect(request.isDone()).toEqual(true);
-            expect(response).toEqual(mockResponse);
-          });
-      });
+        expect(instance.bearerToken()).toNotExist();
 
-      it('throws the response when the API call is not successful', () => {
-        const request = createRequestMock({
-          bearerToken,
-          host,
-          method: 'get',
-          path: '/users',
-          responseStatus: 422,
-        });
+        global.window.localStorage.setItem(bearerTokenKeyInLocalStorage, bearerToken);
 
         return instance.authenticated.get('users')
-          .catch(() => expect(request.isDone()).toEqual(true));
-      });
-    });
-
-    describe('DELETE requests', () => {
-      it('calls the endpoint with the correct parameters', () => {
-        const mockResponse = {};
-        const request = createRequestMock({
-          bearerToken,
-          host,
-          method: 'delete',
-          path: '/users/1',
-          response: mockResponse,
-        });
-
-        return instance.authenticated.delete('users/1')
           .then((response) => {
             expect(request.isDone()).toEqual(true);
             expect(response).toEqual(mockResponse);
           });
       });
-
-      it('throws the response when the API call is not successful', () => {
-        const request = createRequestMock({
-          bearerToken,
-          host,
-          method: 'delete',
-          path: '/users/1',
-          responseStatus: 404,
-        });
-
-        return instance.authenticated.delete('users/1')
-          .catch(() => expect(request.isDone()).toEqual(true));
-      });
     });
 
-    describe('PATCH requests', () => {
-      it('calls the endpoint with the correct parameters', () => {
-        const mockResponse = { first_name: 'The', last_name: 'Gnar' };
-        const request = createRequestMock({
-          bearerToken,
-          host,
-          method: 'patch',
-          params: { last_name: 'Gnar' },
-          path: '/users/1',
-          response: mockResponse,
-        });
+    describe('When the bearer token is set in local storage', () => {
+      beforeEach(() => global.window.localStorage.setItem(bearerTokenKeyInLocalStorage, bearerToken));
+      afterEach(() => global.window.localStorage.removeItem(bearerTokenKeyInLocalStorage));
 
-        return instance.authenticated.patch('users/1', { last_name: 'Gnar' })
-          .then((response) => {
-            expect(request.isDone()).toEqual(true);
-            expect(response).toEqual(mockResponse);
+      describe('GET requests', () => {
+        it('calls the endpoint with the correct parameters', () => {
+          const mockResponse = [{ first_name: 'Gnar' }];
+          const request = createRequestMock({
+            bearerToken,
+            host,
+            method: 'get',
+            path: '/users',
+            response: mockResponse,
           });
-      });
 
-      it('throws the response when the API call is not successful', () => {
-        const request = createRequestMock({
-          bearerToken,
-          host,
-          method: 'patch',
-          params: { last_name: 'Gnar' },
-          path: '/users/1',
-          responseStatus: 404,
+          return instance.authenticated.get('users')
+            .then((response) => {
+              expect(request.isDone()).toEqual(true);
+              expect(response).toEqual(mockResponse);
+            });
         });
 
-        return instance.authenticated.patch('users/1', { last_name: 'Gnar' })
-          .catch(() => expect(request.isDone()).toEqual(true));
-      });
-    });
-
-    describe('POST requests', () => {
-      it('calls the endpoint with the correct parameters', () => {
-        const mockResponse = { first_name: 'The', last_name: 'Gnar' };
-        const request = createRequestMock({
-          bearerToken,
-          host,
-          method: 'post',
-          params: { last_name: 'Gnar' },
-          path: '/users',
-          response: mockResponse,
-        });
-
-        return instance.authenticated.post('users', { last_name: 'Gnar' })
-          .then((response) => {
-            expect(request.isDone()).toEqual(true);
-            expect(response).toEqual(mockResponse);
+        it('throws the response when the API call is not successful', () => {
+          const request = createRequestMock({
+            bearerToken,
+            host,
+            method: 'get',
+            path: '/users',
+            responseStatus: 422,
           });
+
+          return instance.authenticated.get('users')
+            .catch(() => expect(request.isDone()).toEqual(true));
+        });
       });
 
-      it('throws the response when the API call is not successful', () => {
-        const request = createRequestMock({
-          bearerToken,
-          host,
-          method: 'post',
-          params: { last_name: 'Gnar' },
-          path: '/users',
-          responseStatus: 404,
+      describe('DELETE requests', () => {
+        it('calls the endpoint with the correct parameters', () => {
+          const mockResponse = {};
+          const request = createRequestMock({
+            bearerToken,
+            host,
+            method: 'delete',
+            path: '/users/1',
+            response: mockResponse,
+          });
+
+          return instance.authenticated.delete('users/1')
+            .then((response) => {
+              expect(request.isDone()).toEqual(true);
+              expect(response).toEqual(mockResponse);
+            });
         });
 
-        return instance.authenticated.post('users', { last_name: 'Gnar' })
-          .catch(() => expect(request.isDone()).toEqual(true));
+        it('throws the response when the API call is not successful', () => {
+          const request = createRequestMock({
+            bearerToken,
+            host,
+            method: 'delete',
+            path: '/users/1',
+            responseStatus: 404,
+          });
+
+          return instance.authenticated.delete('users/1')
+            .catch(() => expect(request.isDone()).toEqual(true));
+        });
+      });
+
+      describe('PATCH requests', () => {
+        it('calls the endpoint with the correct parameters', () => {
+          const mockResponse = { first_name: 'The', last_name: 'Gnar' };
+          const request = createRequestMock({
+            bearerToken,
+            host,
+            method: 'patch',
+            params: { last_name: 'Gnar' },
+            path: '/users/1',
+            response: mockResponse,
+          });
+
+          return instance.authenticated.patch('users/1', { last_name: 'Gnar' })
+            .then((response) => {
+              expect(request.isDone()).toEqual(true);
+              expect(response).toEqual(mockResponse);
+            });
+        });
+
+        it('throws the response when the API call is not successful', () => {
+          const request = createRequestMock({
+            bearerToken,
+            host,
+            method: 'patch',
+            params: { last_name: 'Gnar' },
+            path: '/users/1',
+            responseStatus: 404,
+          });
+
+          return instance.authenticated.patch('users/1', { last_name: 'Gnar' })
+            .catch(() => expect(request.isDone()).toEqual(true));
+        });
+      });
+
+      describe('POST requests', () => {
+        it('calls the endpoint with the correct parameters', () => {
+          const mockResponse = { first_name: 'The', last_name: 'Gnar' };
+          const request = createRequestMock({
+            bearerToken,
+            host,
+            method: 'post',
+            params: { last_name: 'Gnar' },
+            path: '/users',
+            response: mockResponse,
+          });
+
+          return instance.authenticated.post('users', { last_name: 'Gnar' })
+            .then((response) => {
+              expect(request.isDone()).toEqual(true);
+              expect(response).toEqual(mockResponse);
+            });
+        });
+
+        it('throws the response when the API call is not successful', () => {
+          const request = createRequestMock({
+            bearerToken,
+            host,
+            method: 'post',
+            params: { last_name: 'Gnar' },
+            path: '/users',
+            responseStatus: 404,
+          });
+
+          return instance.authenticated.post('users', { last_name: 'Gnar' })
+            .catch(() => expect(request.isDone()).toEqual(true));
+        });
       });
     });
   });

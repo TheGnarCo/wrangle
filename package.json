@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "webpack",
-    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel-core/register -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "cover-local": "istanbul cover ./node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register",
+    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel-core/register --require test_setup.js -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "cover-local": "istanbul cover ./node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register --require test_setup.js",
     "lint": "eslint src test",
     "mocha": "mocha --compilers js:babel-core/register test/**/*.tests.js --require test_setup.js",
     "test": "npm run build && npm run lint && npm run mocha && npm run cover-local",

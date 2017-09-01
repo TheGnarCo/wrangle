@@ -14,12 +14,12 @@ class API {
     return `${this.host}/${path}`;
   }
 
-  get bearerToken () {
+  bearerToken = () => {
     return global.window.localStorage.getItem(this.bearerTokenKey);
   }
 
-  authenticatedHeaders = {
-    Authorization: `Bearer ${this.bearerToken}`,
+  authenticatedHeaders = () => {
+    return { Authorization: `Bearer ${this.bearerToken()}` };
   }
 
   authenticated = {
@@ -28,7 +28,7 @@ class API {
 
       const request = new Request({
         endpoint,
-        headers: this.authenticatedHeaders,
+        headers: this.authenticatedHeaders(),
         method: 'DELETE',
       });
 
@@ -39,7 +39,7 @@ class API {
 
       const request = new Request({
         endpoint,
-        headers: this.authenticatedHeaders,
+        headers: this.authenticatedHeaders(),
         method: 'GET',
       });
 
@@ -51,7 +51,7 @@ class API {
       const request = new Request({
         body: JSON.stringify(params),
         endpoint,
-        headers: this.authenticatedHeaders,
+        headers: this.authenticatedHeaders(),
         method: 'PATCH',
       });
 
@@ -63,7 +63,7 @@ class API {
       const request = new Request({
         body: JSON.stringify(params),
         endpoint,
-        headers: this.authenticatedHeaders,
+        headers: this.authenticatedHeaders(),
         method: 'POST',
       });
 
