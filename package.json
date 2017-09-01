@@ -1,0 +1,52 @@
+{
+  "name": "wrangle",
+  "version": "1.0.0",
+  "description": "API client for authenticated requests using a JWT bearer token",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "webpack",
+    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel-core/register -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "cover-local": "istanbul cover ./node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register",
+    "lint": "eslint src test",
+    "mocha": "mocha --compilers js:babel-core/register test/**/*.tests.js",
+    "test": "npm run lint && npm run mocha && npm run cover-local",
+    "test-ci": "npm run lint && npm run mocha && npm run cover"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheGnarCo/wrangle.git"
+  },
+  "keywords": [
+    "api-client",
+    "api",
+    "client",
+    "jwt",
+    "authentication"
+  ],
+  "author": "The Gnar Company <hi@thegnar.co> (https://www.thegnar.co)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheGnarCo/wrangle/issues"
+  },
+  "homepage": "https://github.com/TheGnarCo/wrangle#readme",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "webpack": "^3.5.5"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "coveralls": "^2.13.1",
+    "eslint": "^4.5.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.3.0",
+    "expect": "^1.20.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.0",
+    "mocha-lcov-reporter": "^1.3.0"
+  }
+}
