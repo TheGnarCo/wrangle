@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     index: './index.js',
   },
+  target: 'web',
   output: {
     filename: './dist/[name].js',
     libraryTarget: 'umd',
