@@ -57,7 +57,7 @@ import Wrangle from 'wrangle';
 
 const api = new Wrangle('https://example.com');
 
-api.setBearerToken('my-bearer-token')'
+api.setBearerToken('my-bearer-token');
 
 api.authenticated.get('posts?title=Unicorns');
 api.authenticated.delete('users/1');
