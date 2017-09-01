@@ -1,28 +1,28 @@
-# Wrangle
+# Schlepp
 
-[![CircleCI](https://circleci.com/gh/TheGnarCo/wrangle/tree/master.svg?style=svg)](https://circleci.com/gh/TheGnarCo/wrangle/tree/master)
+[![CircleCI](https://circleci.com/gh/TheGnarCo/schlepp/tree/master.svg?style=svg)](https://circleci.com/gh/TheGnarCo/schlepp/tree/master)
 
-[![Coverage Status](https://coveralls.io/repos/github/TheGnarCo/wrangle/badge.svg?branch=master)](https://coveralls.io/github/TheGnarCo/wrangle?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/TheGnarCo/schlepp/badge.svg?branch=master)](https://coveralls.io/github/TheGnarCo/schlepp?branch=master)
 
 API client used for making authenticated JSON requests using a JWT bearer token to a
 specified endpoint. Unauthenticated requests are also supported.
 
 ## Setup
 
-Create an instance of Wrangle passing in your API host
+Create an instance of Schlepp passing in your API host
 
 ```js
-import Wrangle from 'wrangle';
+import Schlepp from 'schlepp';
 
-const api = new Wrangle('https://example.com');
+const api = new Schlepp('https://example.com');
 ```
 
 Set the bearer token for use in authenticated requests
 
 ```js
-import Wrangle from 'wrangle';
+import Schlepp from 'schlepp';
 
-const api = new Wrangle('https://example.com');
+const api = new Schlepp('https://example.com');
 
 api.setBearerToken('my-bearer-token');
 ```
@@ -40,9 +40,9 @@ The difference between the `authenticated` and `unauthenticated` request is that
 ### Unauthenticated requests
 
 ```js
-import Wrangle from 'wrangle';
+import Schlepp from 'schlepp';
 
-const api = new Wrangle('https://example.com');
+const api = new Schlepp('https://example.com');
 
 api.unauthenticated.get('posts?title=Unicorns');
 api.unauthenticated.delete('users/1');
@@ -53,9 +53,9 @@ api.unauthenticated.patch('users/1', { last_name: 'Chaplin' });
 ### Authenticated requests
 
 ```js
-import Wrangle from 'wrangle';
+import Schlepp from 'schlepp';
 
-const api = new Wrangle('https://example.com');
+const api = new Schlepp('https://example.com');
 
 api.setBearerToken('my-bearer-token');
 

@@ -1,5 +1,5 @@
 {
-  "name": "wrangle",
+  "name": "schlepp",
   "version": "1.0.0",
   "description": "API client for authenticated requests using a JWT bearer token",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/TheGnarCo/wrangle.git"
+    "url": "https://github.com/TheGnarCo/schlepp.git"
   },
   "keywords": [
     "api-client",
@@ -26,9 +26,9 @@
   "author": "The Gnar Company <hi@thegnar.co> (https://www.thegnar.co)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TheGnarCo/wrangle/issues"
+    "url": "https://github.com/TheGnarCo/schlepp/issues"
   },
-  "homepage": "https://github.com/TheGnarCo/wrangle#readme",
+  "homepage": "https://github.com/TheGnarCo/schlepp#readme",
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
