@@ -24,11 +24,14 @@ export default class Request {
 
     return fetch(endpoint, requestAttributes)
       .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
+        return response.json()
+          .then((result) => {
+            if (response.ok) {
+              return result;
+            }
 
-        throw response;
+            throw result;
+          });
       });
   }
 }
