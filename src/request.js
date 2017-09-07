@@ -30,7 +30,7 @@ export default class Request {
               return result;
             }
 
-            throw result;
+            throw { http_status: response.status, errors: result };
           });
       });
   }
