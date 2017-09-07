@@ -30,7 +30,9 @@ export default class Request {
               return result;
             }
 
-            throw { http_status: response.status, errors: result };
+            const error = { http_status: response.status, errors: result };
+
+            throw error;
           });
       });
   }
