@@ -5,8 +5,9 @@ import Request from './request';
 es6Promise.polyfill();
 
 class API {
-  constructor ({ host, bearerTokenKeyInLocalStorage }) {
+  constructor ({ headers = {}, host, bearerTokenKeyInLocalStorage }) {
     this.bearerTokenKey = bearerTokenKeyInLocalStorage;
+    this.instanceHeaders = { 'Content-Type': 'application/json', ...headers };
     this.host = host;
   }
 
@@ -18,101 +19,99 @@ class API {
     return global.window.localStorage.getItem(this.bearerTokenKey);
   }
 
-  authenticatedHeaders = () => {
-    return { Authorization: `Bearer ${this.bearerToken()}` };
+  authenticatedHeaders = (overrideHeaders) => {
+    return {
+      Authorization: `Bearer ${this.bearerToken()}`,
+      ...this.headers(overrideHeaders),
+    };
+  }
+
+  headers = (overrideHeaders) => {
+    return {
+      ...this.instanceHeaders,
+      ...overrideHeaders,
+    };
   }
 
   authenticated = {
-    delete: (path) => {
+    delete: (path, headers = {}) => {
       const endpoint = this.absolutePath(path);
 
-      const request = new Request({
+      return Request.send({
         endpoint,
-        headers: this.authenticatedHeaders(),
+        headers: this.authenticatedHeaders(headers),
         method: 'DELETE',
       });
-
-      return request.send();
     },
-    get: (path) => {
+    get: (path, headers = {}) => {
       const endpoint = this.absolutePath(path);
 
-      const request = new Request({
+      return Request.send({
         endpoint,
-        headers: this.authenticatedHeaders(),
+        headers: this.authenticatedHeaders(headers),
         method: 'GET',
       });
-
-      return request.send();
     },
-    patch: (path, params) => {
+    patch: (path, params, headers = {}) => {
       const endpoint = this.absolutePath(path);
 
-      const request = new Request({
+      return Request.send({
         body: JSON.stringify(params),
         endpoint,
-        headers: this.authenticatedHeaders(),
+        headers: this.authenticatedHeaders(headers),
         method: 'PATCH',
       });
-
-      return request.send();
     },
-    post: (path, params) => {
+    post: (path, params, headers = {}) => {
       const endpoint = this.absolutePath(path);
 
-      const request = new Request({
+      return Request.send({
         body: JSON.stringify(params),
         endpoint,
-        headers: this.authenticatedHeaders(),
+        headers: this.authenticatedHeaders(headers),
         method: 'POST',
       });
-
-      return request.send();
     },
   }
 
   unauthenticated = {
-    delete: (path) => {
+    delete: (path, headers = {}) => {
       const endpoint = this.absolutePath(path);
 
-      const request = new Request({
+      return Request.send({
         endpoint,
+        headers: this.headers(headers),
         method: 'DELETE',
       });
-
-      return request.send();
     },
-    get: (path) => {
+    get: (path, headers = {}) => {
       const endpoint = this.absolutePath(path);
 
-      const request = new Request({
+      return Request.send({
         endpoint,
+        headers: this.headers(headers),
         method: 'GET',
       });
-
-      return request.send();
     },
-    patch: (path, params) => {
+    patch: (path, params, headers = {}) => {
       const endpoint = this.absolutePath(path);
 
-      const request = new Request({
+      return Request.send({
         body: JSON.stringify(params),
         endpoint,
+        headers: this.headers(headers),
         method: 'PATCH',
       });
-
-      return request.send();
     },
-    post: (path, params) => {
+    post: (path, params, headers = {}) => {
       const endpoint = this.absolutePath(path);
 
-      const request = new Request({
+      return Request.send({
         body: JSON.stringify(params),
         endpoint,
+        headers: this.headers(headers),
         method: 'POST',
       });
-
-      return request.send();
     },
   }
 }
