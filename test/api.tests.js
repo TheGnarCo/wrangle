@@ -1,11 +1,14 @@
-import expect from 'expect';
+import expect, { restoreSpies, spyOn } from 'expect';
 
 import API from '../src';
 import createRequestMock from './helpers/create_request_mock';
+import Request from '../src/request';
 
 describe('API', () => {
   const bearerTokenKeyInLocalStorage = 'auth_token';
   const host = 'http://www.example.com';
+
+  afterEach(() => restoreSpies());
 
   describe('Setup', () => {
     describe('#absolutePath', () => {
@@ -14,6 +17,70 @@ describe('API', () => {
         const path = 'my-path';
 
         expect(instance.absolutePath(path)).toEqual('http://www.example.com/my-path');
+      });
+    });
+
+    describe('#authenticatedHeaders', () => {
+      beforeEach(() => global.window.localStorage.setItem(bearerTokenKeyInLocalStorage, 'bearer-token'));
+      afterEach(() => global.window.localStorage.removeItem(bearerTokenKeyInLocalStorage));
+
+      context('when no headers have been set when the API client is instantiated', () => {
+        it('returns the default headers for Authorization & Content-Type', () => {
+          const instance = new API({ host, bearerTokenKeyInLocalStorage });
+
+          expect(instance.authenticatedHeaders()).toEqual({
+            Authorization: 'Bearer bearer-token',
+            'Content-Type': 'application/json',
+          });
+        });
+      });
+
+      context('when headers are set when the API client is instantiated', () => {
+        it('adds the headers to the default headers', () => {
+          const headers = { foo: 'bar' };
+          const instance = new API({ headers, host, bearerTokenKeyInLocalStorage });
+
+          expect(instance.authenticatedHeaders()).toEqual({
+            Authorization: 'Bearer bearer-token',
+            'Content-Type': 'application/json',
+            foo: 'bar',
+          });
+        });
+
+        it('overrides the default headers', () => {
+          const headers = { 'Content-Type': 'text/plain' };
+          const instance = new API({ headers, host, bearerTokenKeyInLocalStorage });
+
+          expect(instance.authenticatedHeaders()).toEqual({
+            Authorization: 'Bearer bearer-token',
+            'Content-Type': 'text/plain',
+          });
+        });
+
+        context('when override headers are provided', () => {
+          it('adds the headers to the default and instance headers', () => {
+            const headers = { 'Content-Type': 'text/plain' };
+            const instance = new API({ headers, host, bearerTokenKeyInLocalStorage });
+            const overrideHeaders = { baz: 'qux' };
+
+            expect(instance.authenticatedHeaders(overrideHeaders)).toEqual({
+              Authorization: 'Bearer bearer-token',
+              baz: 'qux',
+              'Content-Type': 'text/plain',
+            });
+          });
+
+          it('overrides the default and instance headers', () => {
+            const headers = { 'Content-Type': 'text/plain' };
+            const instance = new API({ headers, host, bearerTokenKeyInLocalStorage });
+            const overrideHeaders = { 'Content-Type': 'application/xml' };
+
+            expect(instance.authenticatedHeaders(overrideHeaders)).toEqual({
+              Authorization: 'Bearer bearer-token',
+              'Content-Type': 'application/xml',
+            });
+          });
+        });
       });
     });
 
@@ -37,6 +104,58 @@ describe('API', () => {
         });
       });
     });
+
+    describe('#headers', () => {
+      context('when no headers have been set when the API client is instantiated', () => {
+        it('returns the default headers for Content-Type', () => {
+          const instance = new API({ host, bearerTokenKeyInLocalStorage });
+
+          expect(instance.headers()).toEqual({ 'Content-Type': 'application/json' });
+        });
+      });
+
+      context('when headers are set when the API client is instantiated', () => {
+        it('adds the headers to the default headers', () => {
+          const headers = { foo: 'bar' };
+          const instance = new API({ headers, host, bearerTokenKeyInLocalStorage });
+
+          expect(instance.headers()).toEqual({
+            foo: 'bar',
+            'Content-Type': 'application/json',
+          });
+        });
+
+        it('overrides the default headers', () => {
+          const headers = { 'Content-Type': 'text/plain' };
+          const instance = new API({ headers, host, bearerTokenKeyInLocalStorage });
+
+          expect(instance.headers()).toEqual({ 'Content-Type': 'text/plain' });
+        });
+
+        context('when override headers are provided', () => {
+          it('adds the override headers to the instance headers', () => {
+            const headers = { 'Content-Type': 'text/plain' };
+            const instance = new API({ headers, host, bearerTokenKeyInLocalStorage });
+            const overrideHeaders = { foo: 'bar' };
+
+            expect(instance.headers(overrideHeaders)).toEqual({
+              'Content-Type': 'text/plain',
+              foo: 'bar',
+            });
+          });
+
+          it('overrides the instance headers', () => {
+            const headers = { 'Content-Type': 'text/plain' };
+            const instance = new API({ headers, host, bearerTokenKeyInLocalStorage });
+            const overrideHeaders = { 'Content-Type': 'application/xml' };
+
+            expect(instance.headers(overrideHeaders)).toEqual({
+              'Content-Type': 'application/xml',
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('Unauthenticated requests', () => {
@@ -56,6 +175,24 @@ describe('API', () => {
           .then((response) => {
             expect(request.isDone()).toEqual(true);
             expect(response).toEqual(mockResponse);
+          });
+      });
+
+      it('sends the correct headers', () => {
+        spyOn(Request, 'send').andReturn(Promise.resolve());
+
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
+
+        return instance.unauthenticated.get('users', { foo: 'bar' })
+          .then(() => {
+            return expect(Request.send).toHaveBeenCalledWith({
+              endpoint: `${host}/users`,
+              headers: {
+                'Content-Type': 'application/json',
+                foo: 'bar',
+              },
+              method: 'GET',
+            });
           });
       });
 
@@ -90,6 +227,24 @@ describe('API', () => {
           .then((response) => {
             expect(request.isDone()).toEqual(true);
             expect(response).toEqual(mockResponse);
+          });
+      });
+
+      it('sends the correct headers', () => {
+        spyOn(Request, 'send').andReturn(Promise.resolve());
+
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
+
+        return instance.unauthenticated.delete('users/1', { foo: 'bar' })
+          .then(() => {
+            return expect(Request.send).toHaveBeenCalledWith({
+              endpoint: `${host}/users/1`,
+              headers: {
+                'Content-Type': 'application/json',
+                foo: 'bar',
+              },
+              method: 'DELETE',
+            });
           });
       });
 
@@ -128,6 +283,25 @@ describe('API', () => {
           });
       });
 
+      it('sends the correct headers', () => {
+        spyOn(Request, 'send').andReturn(Promise.resolve());
+
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
+
+        return instance.unauthenticated.patch('users/1', { last_name: 'Gnar' }, { foo: 'bar' })
+          .then(() => {
+            return expect(Request.send).toHaveBeenCalledWith({
+              body: JSON.stringify({ last_name: 'Gnar' }),
+              endpoint: `${host}/users/1`,
+              headers: {
+                'Content-Type': 'application/json',
+                foo: 'bar',
+              },
+              method: 'PATCH',
+            });
+          });
+      });
+
       it('throws the response when the API call is not successful', () => {
         const request = createRequestMock({
           host,
@@ -161,6 +335,25 @@ describe('API', () => {
           .then((response) => {
             expect(request.isDone()).toEqual(true);
             expect(response).toEqual(mockResponse);
+          });
+      });
+
+      it('sends the correct headers', () => {
+        spyOn(Request, 'send').andReturn(Promise.resolve());
+
+        const instance = new API({ host, bearerTokenKeyInLocalStorage });
+
+        return instance.unauthenticated.post('users/1', { last_name: 'Gnar' }, { foo: 'bar' })
+          .then(() => {
+            return expect(Request.send).toHaveBeenCalledWith({
+              body: JSON.stringify({ last_name: 'Gnar' }),
+              endpoint: `${host}/users/1`,
+              headers: {
+                'Content-Type': 'application/json',
+                foo: 'bar',
+              },
+              method: 'POST',
+            });
           });
       });
 
@@ -230,6 +423,23 @@ describe('API', () => {
             });
         });
 
+        it('sends the correct headers', () => {
+          spyOn(Request, 'send').andReturn(Promise.resolve());
+
+          return instance.authenticated.get('users', { foo: 'bar' })
+            .then(() => {
+              return expect(Request.send).toHaveBeenCalledWith({
+                endpoint: `${host}/users`,
+                headers: {
+                  Authorization: `Bearer ${bearerToken}`,
+                  'Content-Type': 'application/json',
+                  foo: 'bar',
+                },
+                method: 'GET',
+              });
+            });
+        });
+
         it('throws the response when the API call is not successful', () => {
           const request = createRequestMock({
             bearerToken,
@@ -259,6 +469,23 @@ describe('API', () => {
             .then((response) => {
               expect(request.isDone()).toEqual(true);
               expect(response).toEqual(mockResponse);
+            });
+        });
+
+        it('sends the correct headers', () => {
+          spyOn(Request, 'send').andReturn(Promise.resolve());
+
+          return instance.authenticated.delete('users/1', { foo: 'bar' })
+            .then(() => {
+              return expect(Request.send).toHaveBeenCalledWith({
+                endpoint: `${host}/users/1`,
+                headers: {
+                  Authorization: `Bearer ${bearerToken}`,
+                  'Content-Type': 'application/json',
+                  foo: 'bar',
+                },
+                method: 'DELETE',
+              });
             });
         });
 
@@ -295,6 +522,24 @@ describe('API', () => {
             });
         });
 
+        it('sends the correct headers', () => {
+          spyOn(Request, 'send').andReturn(Promise.resolve());
+
+          return instance.authenticated.patch('users/1', { last_name: 'Gnar' }, { foo: 'bar' })
+            .then(() => {
+              return expect(Request.send).toHaveBeenCalledWith({
+                body: JSON.stringify({ last_name: 'Gnar' }),
+                endpoint: `${host}/users/1`,
+                headers: {
+                  Authorization: `Bearer ${bearerToken}`,
+                  'Content-Type': 'application/json',
+                  foo: 'bar',
+                },
+                method: 'PATCH',
+              });
+            });
+        });
+
         it('throws the response when the API call is not successful', () => {
           const request = createRequestMock({
             bearerToken,
@@ -326,6 +571,24 @@ describe('API', () => {
             .then((response) => {
               expect(request.isDone()).toEqual(true);
               expect(response).toEqual(mockResponse);
+            });
+        });
+
+        it('sends the correct headers', () => {
+          spyOn(Request, 'send').andReturn(Promise.resolve());
+
+          return instance.authenticated.post('users/1', { last_name: 'Gnar' }, { foo: 'bar' })
+            .then(() => {
+              return expect(Request.send).toHaveBeenCalledWith({
+                body: JSON.stringify({ last_name: 'Gnar' }),
+                endpoint: `${host}/users/1`,
+                headers: {
+                  Authorization: `Bearer ${bearerToken}`,
+                  'Content-Type': 'application/json',
+                  foo: 'bar',
+                },
+                method: 'POST',
+              });
             });
         });
 
