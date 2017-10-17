@@ -1,6 +1,6 @@
 {
   "name": "schlepp",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "API client for authenticated requests using a JWT bearer token",
   "main": "dist/index.js",
   "scripts": {
