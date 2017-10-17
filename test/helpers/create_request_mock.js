@@ -5,7 +5,7 @@ const createRequestMock = ({ bearerToken, headers = {}, host, method, params, pa
   const req = bearerToken ? nock(host, { reqheaders: authorizedHeaders }) : nock(host, { reqHeaders: headers });
 
   if (params) {
-    return req[method](path, JSON.stringify(params))
+    return req[method](path, params)
       .reply(responseStatus, response);
   }
 

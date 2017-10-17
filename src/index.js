@@ -56,7 +56,7 @@ class API {
       const endpoint = this.absolutePath(path);
 
       return Request.send({
-        body: JSON.stringify(params),
+        body: params,
         endpoint,
         headers: this.authenticatedHeaders(headers),
         method: 'PATCH',
@@ -66,7 +66,7 @@ class API {
       const endpoint = this.absolutePath(path);
 
       return Request.send({
-        body: JSON.stringify(params),
+        body: params,
         endpoint,
         headers: this.authenticatedHeaders(headers),
         method: 'POST',
@@ -97,7 +97,7 @@ class API {
       const endpoint = this.absolutePath(path);
 
       return Request.send({
-        body: JSON.stringify(params),
+        body: params,
         endpoint,
         headers: this.headers(headers),
         method: 'PATCH',
@@ -107,7 +107,7 @@ class API {
       const endpoint = this.absolutePath(path);
 
       return Request.send({
-        body: JSON.stringify(params),
+        body: params,
         endpoint,
         headers: this.headers(headers),
         method: 'POST',
