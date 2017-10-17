@@ -66,10 +66,10 @@ api.unauthenticated.get('users', { Accept: 'application/json' });
 patch = (path: string, params: object, headers?: object = {}) => promise
 
 // Example:
-api.authenticated.patch('users/1', { first_name: 'Mike' });
+api.authenticated.patch('users/1', JSON.stringify({ first_name: 'Mike' }));
 api.unauthenticated.patch(
   '/users/1',
-  { first_name: 'Mike' },
+  JSON.stringify({ first_name: 'Mike' }),
   { Accept: 'application/json' },
 );
 ```
@@ -80,10 +80,10 @@ api.unauthenticated.patch(
 post = (path: string, params: object, headers?: object = {}) => promise
 
 // Example:
-api.authenticated.post('comments', { comment: 'This is neat!' });
+api.authenticated.post('comments', JSON.stringify({ comment: 'This is neat!' }));
 api.unauthenticated.post(
   'comments',
-  { comment: 'This is neat!' },
+  JSON.stringify({ comment: 'This is neat!' }),
   { Accept: 'application/json' },
 );
 ```
@@ -102,8 +102,8 @@ const api = new Schlepp(
 
 api.unauthenticated.get('posts?title=Unicorns');
 api.unauthenticated.delete('users/1');
-api.unauthenticated.post('users', { first_name: 'Charlie', last_name: 'Brown' });
-api.unauthenticated.patch('users/1', { last_name: 'Chaplin' });
+api.unauthenticated.post('users', JSON.stringify({ first_name: 'Charlie', last_name: 'Brown' }));
+api.unauthenticated.patch('users/1', JSON.stringify{ last_name: 'Chaplin' }));
 ```
 
 ### Authenticated requests
@@ -118,8 +118,8 @@ const api = new Schlepp(
 
 api.authenticated.get('posts?title=Unicorns');
 api.authenticated.delete('users/1');
-api.authenticated.post('users', { first_name: 'Charlie', last_name: 'Brown' });
-api.authenticated.patch('users/1', { last_name: 'Chaplin' });
+api.authenticated.post('users', JSON.stringify({ first_name: 'Charlie', last_name: 'Brown' }));
+api.authenticated.patch('users/1', JSON.stringify({ last_name: 'Chaplin' }));
 ```
 
 ### Specifying headers

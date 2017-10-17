@@ -266,17 +266,18 @@ describe('API', () => {
     describe('PATCH requests', () => {
       it('calls the endpoint with the correct parameters', () => {
         const mockResponse = { first_name: 'The', last_name: 'Gnar' };
+        const params = JSON.stringify(mockResponse);
         const request = createRequestMock({
           host,
           method: 'patch',
-          params: { last_name: 'Gnar' },
+          params,
           path: '/users/1',
           response: mockResponse,
         });
 
         const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-        return instance.unauthenticated.patch('users/1', { last_name: 'Gnar' })
+        return instance.unauthenticated.patch('users/1', params)
           .then((response) => {
             expect(request.isDone()).toEqual(true);
             expect(response).toEqual(mockResponse);
@@ -287,11 +288,12 @@ describe('API', () => {
         spyOn(Request, 'send').andReturn(Promise.resolve());
 
         const instance = new API({ host, bearerTokenKeyInLocalStorage });
+        const params = JSON.stringify({ last_name: 'Gnar' });
 
-        return instance.unauthenticated.patch('users/1', { last_name: 'Gnar' }, { foo: 'bar' })
+        return instance.unauthenticated.patch('users/1', params, { foo: 'bar' })
           .then(() => {
             return expect(Request.send).toHaveBeenCalledWith({
-              body: JSON.stringify({ last_name: 'Gnar' }),
+              body: params,
               endpoint: `${host}/users/1`,
               headers: {
                 'Content-Type': 'application/json',
@@ -303,17 +305,18 @@ describe('API', () => {
       });
 
       it('throws the response when the API call is not successful', () => {
+        const params = JSON.stringify({ last_name: 'Gnar' });
         const request = createRequestMock({
           host,
           method: 'patch',
-          params: { last_name: 'Gnar' },
+          params,
           path: '/users/1',
           responseStatus: 404,
         });
 
         const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-        return instance.unauthenticated.patch('users/1', { last_name: 'Gnar' })
+        return instance.unauthenticated.patch('users/1', params)
           .catch(() => expect(request.isDone()).toEqual(true));
       });
     });
@@ -321,17 +324,18 @@ describe('API', () => {
     describe('POST requests', () => {
       it('calls the endpoint with the correct parameters', () => {
         const mockResponse = { first_name: 'The', last_name: 'Gnar' };
+        const params = JSON.stringify(mockResponse);
         const request = createRequestMock({
           host,
           method: 'post',
-          params: { last_name: 'Gnar' },
+          params,
           path: '/users',
           response: mockResponse,
         });
 
         const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-        return instance.unauthenticated.post('users', { last_name: 'Gnar' })
+        return instance.unauthenticated.post('users', params)
           .then((response) => {
             expect(request.isDone()).toEqual(true);
             expect(response).toEqual(mockResponse);
@@ -342,11 +346,12 @@ describe('API', () => {
         spyOn(Request, 'send').andReturn(Promise.resolve());
 
         const instance = new API({ host, bearerTokenKeyInLocalStorage });
+        const params = JSON.stringify({ last_name: 'Gnar' });
 
-        return instance.unauthenticated.post('users/1', { last_name: 'Gnar' }, { foo: 'bar' })
+        return instance.unauthenticated.post('users/1', params, { foo: 'bar' })
           .then(() => {
             return expect(Request.send).toHaveBeenCalledWith({
-              body: JSON.stringify({ last_name: 'Gnar' }),
+              body: params,
               endpoint: `${host}/users/1`,
               headers: {
                 'Content-Type': 'application/json',
@@ -358,17 +363,18 @@ describe('API', () => {
       });
 
       it('throws the response when the API call is not successful', () => {
+        const params = JSON.stringify({ last_name: 'Gnar' });
         const request = createRequestMock({
           host,
           method: 'post',
-          params: { last_name: 'Gnar' },
+          params,
           path: '/users',
           responseStatus: 404,
         });
 
         const instance = new API({ host, bearerTokenKeyInLocalStorage });
 
-        return instance.unauthenticated.post('users', { last_name: 'Gnar' })
+        return instance.unauthenticated.post('users', params)
           .catch(() => expect(request.isDone()).toEqual(true));
       });
     });
@@ -506,16 +512,17 @@ describe('API', () => {
       describe('PATCH requests', () => {
         it('calls the endpoint with the correct parameters', () => {
           const mockResponse = { first_name: 'The', last_name: 'Gnar' };
+          const params = JSON.stringify(mockResponse);
           const request = createRequestMock({
             bearerToken,
             host,
             method: 'patch',
-            params: { last_name: 'Gnar' },
+            params,
             path: '/users/1',
             response: mockResponse,
           });
 
-          return instance.authenticated.patch('users/1', { last_name: 'Gnar' })
+          return instance.authenticated.patch('users/1', params)
             .then((response) => {
               expect(request.isDone()).toEqual(true);
               expect(response).toEqual(mockResponse);
@@ -525,10 +532,12 @@ describe('API', () => {
         it('sends the correct headers', () => {
           spyOn(Request, 'send').andReturn(Promise.resolve());
 
-          return instance.authenticated.patch('users/1', { last_name: 'Gnar' }, { foo: 'bar' })
+          const params = JSON.stringify({ last_name: 'Gnar' });
+
+          return instance.authenticated.patch('users/1', params, { foo: 'bar' })
             .then(() => {
               return expect(Request.send).toHaveBeenCalledWith({
-                body: JSON.stringify({ last_name: 'Gnar' }),
+                body: params,
                 endpoint: `${host}/users/1`,
                 headers: {
                   Authorization: `Bearer ${bearerToken}`,
@@ -541,16 +550,17 @@ describe('API', () => {
         });
 
         it('throws the response when the API call is not successful', () => {
+          const params = JSON.stringify({ last_name: 'Gnar' });
           const request = createRequestMock({
             bearerToken,
             host,
             method: 'patch',
-            params: { last_name: 'Gnar' },
+            params,
             path: '/users/1',
             responseStatus: 404,
           });
 
-          return instance.authenticated.patch('users/1', { last_name: 'Gnar' })
+          return instance.authenticated.patch('users/1', params)
             .catch(() => expect(request.isDone()).toEqual(true));
         });
       });
@@ -567,7 +577,7 @@ describe('API', () => {
             response: mockResponse,
           });
 
-          return instance.authenticated.post('users', { last_name: 'Gnar' })
+          return instance.authenticated.post('users', JSON.stringify({ last_name: 'Gnar' }))
             .then((response) => {
               expect(request.isDone()).toEqual(true);
               expect(response).toEqual(mockResponse);
@@ -577,10 +587,12 @@ describe('API', () => {
         it('sends the correct headers', () => {
           spyOn(Request, 'send').andReturn(Promise.resolve());
 
-          return instance.authenticated.post('users/1', { last_name: 'Gnar' }, { foo: 'bar' })
+          const params = JSON.stringify({ last_name: 'Gnar' });
+
+          return instance.authenticated.post('users/1', params, { foo: 'bar' })
             .then(() => {
               return expect(Request.send).toHaveBeenCalledWith({
-                body: JSON.stringify({ last_name: 'Gnar' }),
+                body: params,
                 endpoint: `${host}/users/1`,
                 headers: {
                   Authorization: `Bearer ${bearerToken}`,
@@ -602,7 +614,7 @@ describe('API', () => {
             responseStatus: 404,
           });
 
-          return instance.authenticated.post('users', { last_name: 'Gnar' })
+          return instance.authenticated.post('users', JSON.stringify({ last_name: 'Gnar' }))
             .catch(() => expect(request.isDone()).toEqual(true));
         });
       });
