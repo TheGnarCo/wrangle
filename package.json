@@ -5,10 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "webpack",
-    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel-core/register --require test_setup.js -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "cover-local": "istanbul cover ./node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register --require test_setup.js",
+    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require babel-core/register --require test_setup.js -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "cover-local": "istanbul cover ./node_modules/mocha/bin/_mocha -- --require babel-core/register --require test_setup.js",
     "lint": "eslint src test",
-    "mocha": "mocha --compilers js:babel-core/register test/**/*.tests.js --require test_setup.js",
+    "mocha": "mocha --require babel-core/register test/**/*.tests.js --require test_setup.js",
     "test": "npm run build && npm run lint && npm run mocha && npm run cover-local",
     "test-ci": "npm run build && npm run lint && npm run mocha && npm run cover"
   },
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
-    "coveralls": "^2.13.1",
+    "coveralls": "^3.0.6",
     "eslint": "^4.5.0",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.7.0",
@@ -49,7 +49,7 @@
     "eslint-plugin-react": "^7.3.0",
     "expect": "^1.20.2",
     "istanbul": "^1.0.0-alpha",
-    "mocha": "^3.5.0",
+    "mocha": "^6.2.0",
     "mocha-lcov-reporter": "^1.3.0",
     "nock": "^9.0.14"
   }
